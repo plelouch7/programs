@@ -1,0 +1,87 @@
+@if (status() === 'done') {
+  <div class="text-center" role="status">
+    @switch (sentPresence()) {
+      @case ('oui') {
+        <h3 class="text-[2.0625rem]">Merci, c'est noté</h3>
+        @let n = form.controls.nombre.value;
+        <p class="mt-2">Nous vous attendons le {{ ev.dateTexte.toLowerCase() }} à 8h00{{ n > 1 ? ', avec ' + (n - 1) + ' accompagnant(s)' : '' }}.</p>
+      }
+      @default {
+        <h3 class="text-[2.0625rem]">Merci de nous avoir prévenus</h3>
+        <p class="mt-2">Vous serez dans nos prières. Que Dieu vous bénisse.</p>
+      }
+    }
+    <button type="button" class="btn-ghost mt-6 w-full" (click)="edit()">Modifier ma réponse</button>
+  </div>
+} @else {
+  <form class="space-y-6" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <fieldset>
+      <legend class="field-label">Serez-vous présent(e) ?</legend>
+      <div class="segmented">
+        @for (p of presences; track p.value) {
+          <label class="segment">
+            <input type="radio" formControlName="presence" [value]="p.value" class="sr-only" />
+            {{ p.label }}
+          </label>
+        }
+      </div>
+    </fieldset>
+
+    @if (form.controls.presence.value !== 'non') {
+      <div>
+        <label class="field-label" for="nombre">Combien serez-vous, vous compris ?</label>
+        <div class="flex items-stretch gap-2">
+          <button type="button" class="stepper" (click)="step(-1)" aria-label="Une personne de moins">−</button>
+          <input id="nombre" class="field text-center text-xl font-bold" type="number" inputmode="numeric" min="1" max="20"
+            formControlName="nombre" aria-describedby="nombre-err" />
+          <button type="button" class="stepper" (click)="step(1)" aria-label="Une personne de plus">+</button>
+        </div>
+        @if (showError('nombre')) {
+          <p id="nombre-err" class="field-error">Indiquez un nombre entre 1 et 20.</p>
+        }
+      </div>
+    }
+
+    <div>
+      <label class="field-label" for="nom">Votre nom</label>
+      <input id="nom" class="field" formControlName="nom" autocomplete="name" placeholder="Prénom et nom"
+        [attr.aria-invalid]="showError('nom')" aria-describedby="nom-err" />
+      @if (showError('nom')) {
+        <p id="nom-err" class="field-error">Indiquez votre nom pour que nous puissions vous accueillir.</p>
+      }
+    </div>
+
+    <div>
+      <label class="field-label" for="telephone">Votre numéro de téléphone</label>
+      <div class="flex">
+        <span class="field-prefix">+228</span>
+        <input id="telephone" class="field rounded-l-none!" type="tel" inputmode="tel" autocomplete="tel-national"
+          formControlName="telephone" placeholder="90 12 34 56" maxlength="18"
+          [attr.aria-invalid]="showError('telephone')" aria-describedby="tel-hint tel-err" />
+      </div>
+      @if (showError('telephone')) {
+        <p id="tel-err" class="field-error">
+          {{ form.controls.telephone.hasError('required') ? 'Indiquez votre numéro de téléphone.' : 'Le numéro doit avoir 8 chiffres, par exemple 90 12 34 56.' }}
+        </p>
+      } @else {
+        <p id="tel-hint" class="mt-1 text-[0.9375rem] muted">Pour vous joindre en cas de changement.</p>
+      }
+    </div>
+
+    <div>
+      <label class="field-label" for="message">Un message ? <span class="font-normal muted">(facultatif)</span></label>
+      <textarea id="message" class="field min-h-24" formControlName="message" rows="3" maxlength="500"
+        placeholder="Un sujet de prière, une question…"></textarea>
+    </div>
+
+    @if (status() === 'error') {
+      <p class="rounded-xl border border-[#b42318]/40 bg-[#fde8e6] p-3 text-[0.9375rem] text-[#7a1a10]" role="alert">
+        {{ errorMessage() }}
+      </p>
+    }
+
+    <button type="submit" class="btn-fire w-full" [disabled]="status() === 'sending'">
+      {{ status() === 'sending' ? 'Envoi…' : 'Envoyer ma réponse' }}
+    </button>
+  </form>
+}

@@ -1,0 +1,229 @@
+<!-- ============ ENVELOPPE ============ -->
+@if (!opened()) {
+  <div class="welcome pattern" [class.is-opening]="opening()" animate.leave="welcome-leave" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+    <div class="band" aria-hidden="true"></div>
+    <div class="welcome-glow" aria-hidden="true"></div>
+    <app-embers [count]="45" />
+
+    <div class="welcome-content">
+      <p class="welcome-kicker">Invasion Apostolic &amp; Prophétique</p>
+      <p id="welcome-title" class="welcome-title">Vous êtes invité(e)</p>
+
+      <div class="envelope-float">
+        <div class="envelope" (click)="open()">
+          <div class="envelope-back"></div>
+          <div class="envelope-letter" aria-hidden="true">
+            <span class="font-display text-[2rem] leading-none text-bordeaux">INVASION</span>
+            <span class="mt-1 text-[0.8rem] font-bold text-or">Apostolic &amp; Prophétique</span>
+            <span class="mt-2 text-[0.8rem] text-[#6e5240]">{{ ev.dateTexte }}</span>
+          </div>
+          <div class="envelope-front"></div>
+          <div class="envelope-flap"></div>
+          <div class="envelope-edges" aria-hidden="true">
+            <svg viewBox="0 0 300 200" preserveAspectRatio="none">
+              <path d="M1 1 150 96 299 1" fill="none" stroke="#c8862a" stroke-width="1.5" vector-effect="non-scaling-stroke" />
+            </svg>
+          </div>
+          <div class="envelope-label">
+            <span>Pour</span>
+            <strong>{{ prenom() || 'vous' }}</strong>
+          </div>
+          <button type="button" class="envelope-seal" (click)="open(); $event.stopPropagation()" [disabled]="opening()" aria-label="Ouvrir l'invitation">
+            <svg viewBox="0 0 24 24" class="h-7 w-7" fill="currentColor" aria-hidden="true"><path d="M10.8 2h2.4v5.6h5.6V10h-5.6v12h-2.4V10H5.2V7.6h5.6z" /></svg>
+          </button>
+        </div>
+      </div>
+
+      <p class="welcome-hint">
+        <svg viewBox="0 0 24 24" class="btn-icon" aria-hidden="true"><path d="M9 11V6a2 2 0 1 1 4 0v5m0-1a2 2 0 1 1 4 0v1m0 0a2 2 0 1 1 4 0v4a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3.4L4.6 14a2 2 0 0 1 3.4-2l1 1.5" /></svg>
+        Touchez le sceau pour ouvrir
+      </p>
+      <p class="welcome-date">{{ ev.dateTexte }} à Lomé</p>
+    </div>
+
+    <div class="band band-bottom" aria-hidden="true"></div>
+  </div>
+}
+
+<!-- ============ HÉRO « AFFICHE » ============ -->
+<header class="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <img src="/croix-900.webp" srcset="/croix-900.webp 900w, /croix-1536.webp 1536w" sizes="100vw"
+      width="1536" height="1024" alt="" fetchpriority="high" decoding="async" />
+  </div>
+  <app-embers [count]="30" />
+  <div class="hero-inner">
+    <div>
+      <p class="hero-greeting enter" style="--d: 0.1s">
+        @if (prenom()) {
+          {{ prenom() }}, vous êtes invité(e) à
+        } @else {
+          Vous êtes invité(e) à
+        }
+      </p>
+      <h1 class="hero-title">
+        <span class="sr-only">Invasion</span>
+        <span class="hero-title-big" aria-hidden="true">
+          @for (l of titleLetters; track $index) {
+            <span class="letter" [style.animation-delay.ms]="250 + $index * 70">{{ l }}</span>
+          }
+        </span>
+        <span class="hero-title-sub enter" style="--d: 0.85s">Apostolic &amp; Prophétique</span>
+      </h1>
+      <p class="hero-date enter" style="--d: 1s">
+        <svg class="ticket-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
+        <span><strong>{{ ev.dateTexte }}</strong><br />de 8h00 à 14h00</span>
+      </p>
+    </div>
+
+    <figure class="hero-speaker enter" style="--d: 1.2s">
+      <img [ngSrc]="principal.photo" width="600" height="750" priority alt="Photo de {{ principal.nom }}" />
+      <figcaption>
+        <span class="speaker-name">{{ principal.nom }}</span>
+        <span class="speaker-role">{{ principal.role }}</span>
+        @if (invites.length) {
+          <span class="speaker-with">avec {{ invitesTexte }}</span>
+        }
+      </figcaption>
+    </figure>
+  </div>
+</header>
+
+<!-- ============ BILLET ============ -->
+<section class="ticket" aria-label="Lieu et compte à rebours">
+  <div class="ticket-row">
+    <svg class="ticket-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
+    <div><strong>Centre Wycliffe Togo</strong><span>Salle climatisée, Klikanmé, Lomé</span></div>
+  </div>
+  <div class="ticket-tear" aria-hidden="true"></div>
+  <app-countdown />
+</section>
+
+<main class="page-grid">
+  <!-- ============ THÈME ============ -->
+  <section class="section-block span-2" reveal aria-labelledby="t-theme">
+    <h2 id="t-theme" class="h2">Le thème</h2>
+    <div class="theme-body">
+    <blockquote class="theme-quote">{{ ev.theme }}</blockquote>
+    <p class="verse">« {{ ev.verset.texte }} »<cite class="mt-1 block not-italic font-semibold">{{ ev.verset.reference }}</cite></p>
+    </div>
+  </section>
+
+  <!-- ============ ORATEURS ============ -->
+  <section class="section-block span-2" reveal aria-labelledby="t-orateurs">
+    <h2 id="t-orateurs" class="h2">Les orateurs</h2>
+    <ul class="speakers stagger">
+      @for (o of ev.orateurs; track $index) {
+        <li [style.--i]="$index">
+          <div class="flex items-center gap-4">
+            <img [ngSrc]="o.photo" width="600" height="750" alt="Photo de {{ o.nom }}" class="speaker-avatar" />
+            <div>
+              <p class="speaker-list-name">{{ o.nom }}</p>
+              <p class="muted">{{ o.role }}</p>
+            </div>
+          </div>
+          @for (p of o.bio; track $index) {
+            <p class="mt-3">{{ p }}</p>
+          }
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- ============ PROGRAMME ============ -->
+  <section class="section-block" reveal aria-labelledby="t-programme">
+    <h2 id="t-programme" class="h2">Programme de la journée</h2>
+    <ol class="timeline stagger">
+      @for (item of ev.programme; track item.heure) {
+        <li [style.--i]="$index">
+          <span class="timeline-time">{{ item.heure }}</span>
+          <div>
+            <p class="timeline-title">{{ item.titre }}</p>
+            @if (item.detail) {
+              <p class="muted">{{ item.detail }}</p>
+            }
+          </div>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <!-- ============ ACCÈS & CONTACT ============ -->
+  <section class="section-block" reveal aria-labelledby="t-acces">
+    <h2 id="t-acces" class="h2">Venir au Centre Wycliffe</h2>
+    <p>{{ ev.lieu }}.<br />{{ ev.lieuDetail }}.</p>
+    <div class="mt-5 grid grid-cols-2 gap-3">
+      <a class="btn-ghost" [href]="ev.mapsUrl" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" class="btn-icon" aria-hidden="true"><path d="m3 11 19-9-9 19-2-8-8-2z" /></svg>
+        Itinéraire
+      </a>
+      <button type="button" class="btn-ghost" (click)="addToCalendar()">
+        <svg viewBox="0 0 24 24" class="btn-icon" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18M12 14v4M10 16h4" /></svg>
+        Calendrier
+      </button>
+    </div>
+    <p class="mt-3 text-[0.9375rem] muted">
+      Le calendrier ne s'ouvre pas ? <a class="link" [href]="googleCalendar()" target="_blank" rel="noopener">Ajoutez-le à Google Agenda</a>.
+    </p>
+
+    <h3 class="mt-9 mb-2 text-[1.625rem]">Une question ? Appelez l'infoline</h3>
+    @for (n of ev.infoline; track n) {
+      <a class="contact-row" [href]="tel(n)">
+        <svg viewBox="0 0 24 24" class="btn-icon text-or-clair" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+        {{ n }}
+        <small>Appeler</small>
+      </a>
+    }
+  </section>
+
+  <!-- ============ CONFIRMATION ============ -->
+  <section id="confirmation" class="section-block span-2 scroll-mt-4" aria-labelledby="t-rsvp">
+    <div class="paper">
+      <div class="paper-intro">
+        <h2 id="t-rsvp" class="h2 mb-1!">Confirmez votre présence</h2>
+        <p class="muted mb-6">Votre réponse nous aide à préparer l'accueil et les places assises.</p>
+      </div>
+      <app-rsvp-form [code]="code()" [invite]="invite()" />
+    </div>
+  </section>
+</main>
+
+<!-- ============ PIED DE PAGE ============ -->
+<footer class="site-footer">
+  <p class="font-semibold text-white">Invitez vos proches</p>
+  <div class="mt-3 flex flex-wrap gap-3">
+    <a class="share-btn bg-[#1fa855]" [href]="whatsappShare()" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true"><path [attr.d]="waIcon" /></svg>
+      Partager sur WhatsApp
+    </a>
+    <a class="share-btn bg-[#1877F2]" [href]="facebookShare()" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true"><path d="M9.1 23.7v-8H6.6V12h2.5v-1.6c0-4.1 1.8-6 5.9-6 .8 0 2.1.2 2.6.3v3.3h-1.4c-1.5 0-2 .6-2 2V12h3.4l-.6 3.7h-2.8v8.2A12 12 0 1 0 9.1 23.7Z" /></svg>
+      Facebook
+    </a>
+  </div>
+  <p class="mt-10 text-[0.9375rem] muted">{{ ev.nom }} avec {{ ev.orateur }}, {{ ev.dateTexte.toLowerCase() }}, Centre Wycliffe Togo, Lomé.</p>
+</footer>
+
+<!-- ============ BARRE D'ACTION ============ -->
+@if (opened()) {
+  <nav class="action-bar" [class.is-hidden]="rsvpInView()" aria-label="Actions rapides" animate.enter="bar-enter">
+    <div class="action-bar-inner">
+      <button type="button" class="btn-fire flex-1" (click)="goToRsvp()" [attr.tabindex]="rsvpInView() ? -1 : null">
+        {{ hasReplied() ? 'Voir ma réponse' : 'Confirmer ma présence' }}
+      </button>
+      <a class="icon-btn wa" [href]="whatsappContact" target="_blank" rel="noopener" aria-label="Écrire à l'infoline sur WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6"><path [attr.d]="waIcon" /></svg>
+      </a>
+      @if (ev.musique) {
+        <button type="button" class="icon-btn" (click)="toggleMusic()" [attr.aria-pressed]="playing()"
+          [attr.aria-label]="playing() ? 'Mettre la musique en pause' : 'Écouter la musique'">
+          @if (playing()) {
+            <svg viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6"><rect x="6" y="4" width="4" height="16" rx="1" /><rect x="14" y="4" width="4" height="16" rx="1" /></svg>
+          } @else {
+            <svg viewBox="0 0 24 24" class="btn-icon h-6! w-6!"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
+          }
+        </button>
+      }
+    </div>
+  </nav>
+}

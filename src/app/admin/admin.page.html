@@ -1,0 +1,126 @@
+<main class="mx-auto max-w-5xl px-4 pt-6 pb-24">
+  <header class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <p class="eyebrow">Invasion Apostolic &amp; Prophétique</p>
+      <h1 class="text-[2.0625rem]">Invités et réponses</h1>
+    </div>
+    <div class="flex gap-2">
+      <button type="button" class="btn-ghost btn-sm" (click)="load()">Actualiser</button>
+      <button type="button" class="btn-ghost btn-sm" (click)="logout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <!-- Totaux -->
+  @let t = totals();
+  <section class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3" aria-label="Totaux">
+    <div class="stat col-span-2 sm:col-span-1"><span class="stat-num">{{ t.personnesOui }}</span><span class="stat-label">personnes attendues<br />({{ t.oui }} réponse{{ t.oui > 1 ? 's' : '' }} « oui »)</span></div>
+    <div class="stat"><span class="stat-num">{{ t.non }}</span><span class="stat-label">ne viendront pas</span></div>
+    <div class="stat"><span class="stat-num">{{ t.sansReponse }}<small class="text-lg text-white/50"> / {{ t.invites }}</small></span><span class="stat-label">invités sans réponse</span></div>
+  </section>
+
+  <!-- Ajout -->
+  <section class="card mt-6">
+    <h2 class="font-display text-2xl tracking-wide">Ajouter un invité</h2>
+    <form class="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_1fr_auto]" [formGroup]="addForm" (ngSubmit)="addInvite()">
+      <input class="field" formControlName="prenom" placeholder="Prénom *" aria-label="Prénom" />
+      <input class="field" formControlName="nom" placeholder="Nom" aria-label="Nom" />
+      <input class="field" formControlName="telephone" type="tel" inputmode="tel" placeholder="Téléphone (90 00 00 00)" aria-label="Téléphone"
+        [attr.aria-invalid]="addForm.controls.telephone.invalid && addForm.controls.telephone.touched" />
+      <button class="btn-fire btn-sm" type="submit">Ajouter</button>
+    </form>
+    @if (addForm.controls.telephone.invalid && addForm.controls.telephone.touched) {
+      <p class="field-error">Numéro togolais à 8 chiffres attendu.</p>
+    }
+    <div class="mt-4 flex flex-wrap items-center gap-3 border-t border-white/10 pt-4 text-sm">
+      <label class="btn-ghost btn-sm cursor-pointer">
+        Importer un CSV
+        <input type="file" accept=".csv,text/csv,text/plain" class="sr-only" (change)="importCsv($event)" />
+      </label>
+      <button type="button" class="link" (click)="downloadTemplate()">Télécharger le modèle CSV</button>
+      <span class="text-white/50">Colonnes : prenom, nom, telephone</span>
+    </div>
+  </section>
+
+  <!-- Lien public -->
+  <section class="card mt-4 flex flex-wrap items-center justify-between gap-3">
+    <div class="min-w-0">
+      <p class="info-label">Lien public (sans nom)</p>
+      <p class="truncate font-semibold">{{ origin }}/</p>
+    </div>
+    <button type="button" class="btn-ghost btn-sm" (click)="copy(origin + '/')">Copier</button>
+  </section>
+
+  <!-- Onglets + recherche -->
+  <div class="mt-8 flex flex-wrap items-center gap-3">
+    <div class="flex rounded-full border border-or/50 p-1" role="tablist">
+      <button type="button" role="tab" class="tab" [class.tab-active]="tab() === 'invites'" [attr.aria-selected]="tab() === 'invites'" (click)="tab.set('invites')">
+        Invités ({{ t.invites }})
+      </button>
+      <button type="button" role="tab" class="tab" [class.tab-active]="tab() === 'reponses'" [attr.aria-selected]="tab() === 'reponses'" (click)="tab.set('reponses')">
+        Réponses ({{ t.reponses }})
+      </button>
+    </div>
+    <input class="field min-h-11 flex-1 py-2" type="search" placeholder="Rechercher…" aria-label="Rechercher"
+      [value]="search()" (input)="search.set($any($event.target).value)" />
+    <button type="button" class="btn-fire btn-sm" (click)="exportCsv()">Exporter CSV</button>
+  </div>
+
+  @if (loading()) {
+    <p class="mt-8 text-center text-white/60">Chargement…</p>
+  } @else if (tab() === 'invites') {
+    <ul class="mt-4 grid gap-3 md:grid-cols-2">
+      @for (i of filteredInvites(); track i.id) {
+        @let r = reponseByInvite().get(i.id);
+        <li class="card p-4">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p class="truncate text-lg font-semibold">{{ i.prenom }} {{ i.nom }}</p>
+              <p class="text-sm text-white/60">{{ i.telephone || 'Pas de téléphone' }} · <code class="text-or-clair">{{ i.code }}</code></p>
+            </div>
+            @if (r) {
+              <span class="badge" [attr.data-presence]="r.presence">{{ labels[r.presence] }}{{ r.presence !== 'non' ? ' · ' + r.nombre : '' }}</span>
+            } @else {
+              <span class="badge">En attente</span>
+            }
+          </div>
+          @if (r?.message) {
+            <p class="mt-2 rounded-lg bg-black/30 p-2 text-sm text-white/80">« {{ r?.message }} »</p>
+          }
+          <div class="mt-3 flex flex-wrap gap-2">
+            <a class="btn-fire btn-sm btn-wa" [href]="whatsappLink(i)" target="_blank" rel="noopener">WhatsApp</a>
+            <button type="button" class="btn-ghost btn-sm" (click)="copy(link(i.code))">Copier le lien</button>
+            <button type="button" class="btn-sm ml-auto rounded-full px-3 text-red-300" (click)="remove(i)" [attr.aria-label]="'Supprimer ' + i.prenom">Supprimer</button>
+          </div>
+        </li>
+      } @empty {
+        <li class="py-10 text-center text-white/60">Aucun invité pour l'instant.</li>
+      }
+    </ul>
+  } @else {
+    <ul class="mt-4 grid gap-3 md:grid-cols-2">
+      @for (r of filteredReponses(); track r.id) {
+        <li class="card p-4">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p class="truncate text-lg font-semibold">{{ r.nom }}</p>
+              <p class="text-sm text-white/60">{{ r.telephone }} · {{ r.invite_id ? 'Invitation personnelle' : 'Lien public' }}</p>
+            </div>
+            <span class="badge" [attr.data-presence]="r.presence">{{ labels[r.presence] }}{{ r.presence !== 'non' ? ' · ' + r.nombre : '' }}</span>
+          </div>
+          @if (r.message) {
+            <p class="mt-2 rounded-lg bg-black/30 p-2 text-sm text-white/80">« {{ r.message }} »</p>
+          }
+          <p class="mt-2 text-xs text-white/40">{{ r.updated_at | date: 'dd/MM/yyyy HH:mm' : 'UTC' }} (GMT)</p>
+        </li>
+      } @empty {
+        <li class="py-10 text-center text-white/60">Aucune réponse pour l'instant.</li>
+      }
+    </ul>
+  }
+
+  @if (toast()) {
+    <div class="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-sm rounded-xl border border-or/50 bg-bordeaux-dark px-4 py-3 text-center shadow-xl" role="status">
+      {{ toast() }}
+    </div>
+  }
+</main>
