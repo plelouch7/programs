@@ -60,11 +60,11 @@ export default class InvitationPage implements OnInit {
     () =>
       `🔥 ${EVENT.nom} avec ${EVENT.orateur}\n« ${EVENT.theme} »\n📅 ${EVENT.dateTexte}, ${EVENT.heureTexte}\n📍 ${EVENT.lieu}, Klikanmé (Lomé)\n👉 ${this.publicUrl()}`,
   );
-  protected readonly whatsappShare = computed(() => `https://wa.me/?text=${encodeURIComponent(this.shareText())}`);
+  protected readonly whatsappShare = computed(() => `https://api.whatsapp.com/send?text=${encodeURIComponent(this.shareText())}`);
   protected readonly facebookShare = computed(
     () => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(this.publicUrl())}`,
   );
-  protected readonly whatsappContact = `https://wa.me/${EVENT.whatsapp}?text=${encodeURIComponent(
+  protected readonly whatsappContact = `https://api.whatsapp.com/send?phone=${EVENT.whatsapp}&text=${encodeURIComponent(
     `Bonjour, je vous contacte au sujet de l'${EVENT.nom} du ${EVENT.dateTexte.toLowerCase()}.`,
   )}`;
 

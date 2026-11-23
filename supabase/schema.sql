@@ -69,6 +69,16 @@ create table if not exists public.reponses (
 );
 
 -- ---------------------------------------------------------------------
+-- Accueil le jour J : heure d'arrivée et nombre de personnes réellement venues.
+-- Sur l'invité s'il a une invitation personnelle, sinon sur la réponse (lien public).
+-- (Base déjà créée ? Exécutez seulement ces 4 lignes.)
+-- ---------------------------------------------------------------------
+alter table public.invites  add column if not exists arrivee_at timestamptz;
+alter table public.invites  add column if not exists presents int check (presents between 1 and 50);
+alter table public.reponses add column if not exists arrivee_at timestamptz;
+alter table public.reponses add column if not exists presents int check (presents between 1 and 50);
+
+-- ---------------------------------------------------------------------
 -- RLS : seul l'admin lit/écrit les tables directement.
 -- ---------------------------------------------------------------------
 alter table public.invites  enable row level security;

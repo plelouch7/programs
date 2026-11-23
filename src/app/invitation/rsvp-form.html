@@ -5,6 +5,10 @@
         <h3 class="text-[2.0625rem]">Merci, c'est noté</h3>
         @let n = form.controls.nombre.value;
         <p class="mt-2">Nous vous attendons le {{ ev.dateTexte.toLowerCase() }} à 8h00{{ n > 1 ? ', avec ' + (n - 1) + ' accompagnant(s)' : '' }}.</p>
+        @if (code()) {
+          <p class="mt-4">Votre code d'accueil : <strong class="font-mono text-xl tracking-widest">{{ code().toUpperCase() }}</strong><br />
+            <span class="text-[0.9375rem] muted">Présentez cette page à l'entrée.</span></p>
+        }
       }
       @default {
         <h3 class="text-[2.0625rem]">Merci de nous avoir prévenus</h3>

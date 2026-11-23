@@ -99,7 +99,7 @@
     </div>
 
     <figure class="hero-speaker enter" style="--d: 1.2s">
-      <img [ngSrc]="principal.photo" width="600" height="750" priority alt="Photo de {{ principal.nom }}" />
+      <img [ngSrc]="principal.photo" width="600" height="600" priority alt="Photo de {{ principal.nom }}" />
       <figcaption>
         <span class="speaker-name">{{ principal.nom }}</span>
         <span class="speaker-role">{{ principal.role }}</span>
@@ -137,15 +137,11 @@
     <ul class="speakers stagger">
       @for (o of ev.orateurs; track $index) {
         <li [style.--i]="$index">
-          <div class="flex items-center gap-4">
-            <img [ngSrc]="o.photo" width="600" height="750" alt="Photo de {{ o.nom }}" class="speaker-avatar" />
-            <div>
-              <p class="speaker-list-name">{{ o.nom }}</p>
-              <p class="muted">{{ o.role }}</p>
-            </div>
-          </div>
+          <img [ngSrc]="o.photo" width="600" height="600" alt="Photo de {{ o.nom }}" class="speaker-photo" />
+          <p class="speaker-list-name">{{ o.nom }}</p>
+          <p class="muted">{{ o.role }}</p>
           @for (p of o.bio; track $index) {
-            <p class="mt-3">{{ p }}</p>
+            <p class="mt-2 text-[0.9375rem]">{{ p }}</p>
           }
         </li>
       }

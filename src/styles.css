@@ -625,8 +625,8 @@ app-invitation:not(.locked) .enter {
   text-align: left;
 }
 .hero-speaker img {
-  width: 5.25rem;
-  height: 5.25rem;
+  width: 6.5rem;
+  height: 6.5rem;
   flex-shrink: 0;
   border-radius: 999px;
   border: 2px solid var(--color-or);
@@ -653,26 +653,26 @@ app-invitation:not(.locked) .enter {
   line-height: 1.4;
   color: var(--color-or-clair);
 }
-.speakers li {
-  padding: 1.25rem 0;
-  border-top: 1px solid rgb(200 134 42 / 0.2);
+.speakers {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.75rem 1rem;
 }
-.speakers li:last-child {
-  border-bottom: 1px solid rgb(200 134 42 / 0.2);
-}
-.speaker-avatar {
-  width: 4.5rem;
-  height: 4.5rem;
-  flex-shrink: 0;
-  border-radius: 999px;
+.speaker-photo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  margin-bottom: 0.75rem;
+  border-radius: 18px;
   border: 2px solid var(--color-or);
   object-fit: cover;
   object-position: top;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.45);
 }
 .speaker-list-name {
   font-family: var(--font-display);
-  font-size: 1.625rem;
-  line-height: 1.15;
+  font-size: 1.375rem;
+  line-height: 1.1;
   color: #fff;
 }
 
@@ -1232,12 +1232,10 @@ input[type='number'] {
    =================================================================== */
 @media (min-width: 768px) {
   .speakers {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 2rem;
+    gap: 2.25rem 2rem;
   }
-  .speakers li:last-child {
-    border-bottom: 0;
+  .speaker-list-name {
+    font-size: 1.625rem;
   }
   .envelope {
     width: min(60vw, 440px);
@@ -1303,8 +1301,8 @@ input[type='number'] {
     max-width: 30rem;
   }
   .hero-speaker img {
-    width: 6.5rem;
-    height: 6.5rem;
+    width: 8.5rem;
+    height: 8.5rem;
   }
   .speaker-name {
     font-size: 2.0625rem;
@@ -1368,20 +1366,6 @@ input[type='number'] {
   .speakers {
     grid-template-columns: repeat(4, 1fr);
     gap: 2.5rem;
-  }
-  .speakers li {
-    padding: 1.5rem 0 0;
-    border-top: 2px solid rgb(200 134 42 / 0.45);
-    border-bottom: 0;
-  }
-  .speakers li > .flex {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  .speaker-avatar {
-    width: 7.5rem;
-    height: 7.5rem;
   }
   #confirmation .paper {
     max-width: 46rem;

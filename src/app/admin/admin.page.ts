@@ -2,21 +2,23 @@ import { DatePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Meta } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { EVENT } from '../event';
 import { Presence, csvToInvites, downloadFile, normalizeTogoPhone, toCsv, togoPhoneValidator } from '../utils';
 import { AdminService } from './admin.routes';
 
-interface InviteRow {
+export interface InviteRow {
   id: string;
   code: string;
   prenom: string;
   nom: string | null;
   telephone: string | null;
   created_at: string;
+  arrivee_at: string | null;
+  presents: number | null;
 }
-interface ReponseRow {
+export interface ReponseRow {
   id: string;
   invite_id: string | null;
   nom: string;
@@ -26,13 +28,15 @@ interface ReponseRow {
   message: string | null;
   created_at: string;
   updated_at: string;
+  arrivee_at: string | null;
+  presents: number | null;
 }
 
 export const PRESENCE_LABEL: Record<Presence, string> = { oui: 'Oui', non: 'Non' };
 
 @Component({
   selector: 'app-admin',
-  imports: [ReactiveFormsModule, DatePipe],
+  imports: [ReactiveFormsModule, DatePipe, RouterLink],
   templateUrl: './admin.page.html',
 })
 export default class AdminPage implements OnInit {
@@ -116,7 +120,7 @@ export default class AdminPage implements OnInit {
       `📅 ${EVENT.dateTexte}, ${EVENT.heureTexte}\n📍 ${EVENT.lieu}, Klikanmé (Lomé)\n\n` +
       `Ouvrez votre invitation et confirmez votre présence ici :\n${this.link(i.code)}`;
     const phone = i.telephone?.replace(/\D/g, '') ?? '';
-    return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+    return `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}`;
   }
 
   protected async addInvite(): Promise<void> {
@@ -164,15 +168,15 @@ export default class AdminPage implements OnInit {
   }
 
   protected exportCsv(): void {
-    const header = ['Prénom', 'Nom', 'Téléphone invité', 'Lien', 'Présence', 'Personnes', 'Nom (réponse)', 'Téléphone (réponse)', 'Message', 'Date de réponse'];
+    const header = ['Prénom', 'Nom', 'Téléphone invité', 'Lien', 'Présence', 'Personnes', 'Nom (réponse)', 'Téléphone (réponse)', 'Message', 'Date de réponse', 'Arrivée', 'Présents'];
     const fmt = (d?: string) => (d ? new Date(d).toLocaleString('fr-FR', { timeZone: 'Africa/Lome' }) : '');
     const rows = this.invites().map((i) => {
       const r = this.reponseByInvite().get(i.id);
-      return [i.prenom, i.nom, i.telephone, this.link(i.code), r ? this.labels[r.presence] : 'Sans réponse', r?.nombre, r?.nom, r?.telephone, r?.message, fmt(r?.updated_at)];
+      return [i.prenom, i.nom, i.telephone, this.link(i.code), r ? this.labels[r.presence] : 'Sans réponse', r?.nombre, r?.nom, r?.telephone, r?.message, fmt(r?.updated_at), fmt(i.arrivee_at ?? undefined), i.presents];
     });
     const publics = this.reponses()
       .filter((r) => !r.invite_id)
-      .map((r) => ['', '', '', 'Lien public', this.labels[r.presence], r.nombre, r.nom, r.telephone, r.message, fmt(r.updated_at)]);
+      .map((r) => ['', '', '', 'Lien public', this.labels[r.presence], r.nombre, r.nom, r.telephone, r.message, fmt(r.updated_at), fmt(r.arrivee_at ?? undefined), r.presents]);
     downloadFile(`invites-reponses-${new Date().toISOString().slice(0, 10)}.csv`, toCsv([header, ...rows, ...publics]), 'text/csv;charset=utf-8');
   }
 

@@ -24,4 +24,5 @@ const adminGuard: CanActivateFn = async () => {
 export default [
   { path: 'login', loadComponent: () => import('./login.page'), title: 'Connexion admin' },
   { path: '', canActivate: [adminGuard], loadComponent: () => import('./admin.page'), title: 'Administration — Invités' },
+  { path: 'accueil', canActivate: [adminGuard], loadComponent: () => import('./accueil.page'), title: 'Accueil — Jour J' },
 ] satisfies Routes;

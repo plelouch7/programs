@@ -36,12 +36,12 @@ export const EVENT = {
     {
       nom: 'Dr Edor Norbert',
       role: 'Orateur principal',
-      photo: '/orateur.jpg',
+      photo: '/orateur-edor.webp',
       bio: ['[Biographie à compléter]'],
     },
-    { nom: '[Orateur 2]', role: 'Orateur', photo: '/orateur.jpg', bio: ['[Biographie à compléter]'] },
-    { nom: '[Orateur 3]', role: 'Orateur', photo: '/orateur.jpg', bio: ['[Biographie à compléter]'] },
-    { nom: '[Orateur 4]', role: 'Orateur', photo: '/orateur.jpg', bio: ['[Biographie à compléter]'] },
+    { nom: 'Prophète Samuel Maxime ADJE', role: 'Orateur', photo: '/orateur-adje.webp', bio: ['[Biographie à compléter]'] },
+    { nom: 'Ens Elom AHIAKOU', role: 'Orateur', photo: '/orateur-ahiakou.webp', bio: ['[Biographie à compléter]'] },
+    { nom: 'Prophète Aristide', role: 'Orateur', photo: '/orateur.jpg', bio: ['[Biographie à compléter]'] },
   ],
 
   // [À COMPLÉTER] Programme de la journée
