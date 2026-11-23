@@ -6,6 +6,7 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import { environment } from './environments/environment';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
@@ -15,17 +16,24 @@ const angularApp = new AngularNodeAppEngine({
   trustProxyHeaders: ['x-forwarded-host', 'x-forwarded-proto'],
 });
 
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
+/** URL absolue du site : SITE_URL, sinon hôte de la requête. */
+const siteOrigin = (req: express.Request) =>
+  (environment.siteUrl || `${req.get('x-forwarded-proto') ?? req.protocol}://${req.get('host')}`).replace(/\/$/, '');
+
+app.get('/robots.txt', (req, res) => {
+  res
+    .type('text/plain')
+    .send(`User-agent: *\nDisallow: /admin\nDisallow: /i/\n\nSitemap: ${siteOrigin(req)}/sitemap.xml\n`);
+});
+
+// Une seule page publique : les liens /i/… sont personnels et non indexés
+app.get('/sitemap.xml', (req, res) => {
+  res
+    .type('application/xml')
+    .send(
+      `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${siteOrigin(req)}/</loc></url>\n</urlset>\n`,
+    );
+});
 
 /**
  * Serve static files from /browser

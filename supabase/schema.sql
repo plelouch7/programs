@@ -147,5 +147,5 @@ grant execute on function public.is_admin() to authenticated;
 -- ---------------------------------------------------------------------
 -- >>> REMPLACEZ par l'e-mail du compte admin créé dans Authentication > Users
 -- ---------------------------------------------------------------------
-insert into public.admins (email) values (lower('admin@exemple.com'))
+insert into public.admins (email) values (lower('admin@mailinator.com'))
   on conflict do nothing;

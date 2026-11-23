@@ -43,5 +43,59 @@ export class SeoService {
       const attr = key.startsWith('og:') ? 'property' : 'name';
       this.meta.updateTag({ [attr]: key, content }, `${attr}="${key}"`);
     }
+
+    // Liens personnels /i/… : noindex, donc ni canonical ni données structurées
+    if (opts.noindex) return;
+    this.headElement('link', 'canonical', (el) => {
+      el.setAttribute('rel', 'canonical');
+      el.setAttribute('href', url);
+    });
+    this.headElement('script', 'event-jsonld', (el) => {
+      el.setAttribute('type', 'application/ld+json');
+      el.textContent = JSON.stringify(this.eventJsonLd(url, image));
+    });
+  }
+
+  /** Crée ou réutilise un élément du <head> (pas de doublon à l'hydratation). */
+  private headElement(tag: string, id: string, fill: (el: Element) => void): void {
+    const head = this.document.head;
+    let el = head.querySelector(`#${id}`);
+    if (!el) {
+      el = this.document.createElement(tag);
+      el.id = id;
+      head.appendChild(el);
+    }
+    fill(el);
+  }
+
+  /** Données structurées schema.org/Event (résultats enrichis Google). */
+  private eventJsonLd(url: string, image: string) {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Event',
+      name: EVENT.nom,
+      description: `${EVENT.theme}. Avec ${EVENT.orateur}.`,
+      url,
+      image: [image],
+      startDate: EVENT.debut.toISOString(),
+      endDate: EVENT.fin.toISOString(),
+      eventStatus: 'https://schema.org/EventScheduled',
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      inLanguage: 'fr',
+      location: {
+        '@type': 'Place',
+        name: EVENT.lieu,
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Klikanmé',
+          addressLocality: 'Lomé',
+          addressCountry: 'TG',
+        },
+      },
+      // les orateurs encore « [À COMPLÉTER] » sont ignorés
+      performer: EVENT.orateurs
+        .filter((o) => !o.nom.startsWith('['))
+        .map((o) => ({ '@type': 'Person', name: o.nom })),
+    };
   }
 }
