@@ -137,6 +137,13 @@ revoke execute on function public.submit_reponse(text, text, text, int, text, te
 grant execute on function public.get_invitation(text) to anon, authenticated;
 grant execute on function public.submit_reponse(text, text, text, int, text, text) to anon, authenticated;
 
+-- Droits de table explicites pour le rôle connecté (les nouveaux projets Supabase
+-- ne les accordent plus toujours par défaut). Les policies RLS ci-dessus limitent
+-- toujours l'accès aux seuls admins ; le rôle anon n'a aucun accès direct aux tables.
+grant usage on schema public to anon, authenticated;
+grant select, insert, update, delete on public.invites, public.reponses to authenticated;
+grant execute on function public.is_admin() to authenticated;
+
 -- ---------------------------------------------------------------------
 -- >>> REMPLACEZ par l'e-mail du compte admin créé dans Authentication > Users
 -- ---------------------------------------------------------------------
